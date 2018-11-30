@@ -1,0 +1,31 @@
+.complaint-groups,
+.complaint-sub-groups {
+	margin-bottom: 40px;
+	max-width: 700px;
+}
+
+table.dataTable tr.dtrg-group td {
+	background-color: #e0e0e0;
+}
+
+table.dataTable tr.dtrg-group.dtrg-level-0 td {
+	border-bottom: 1px solid #b9b9b9;
+	font-weight: bold;
+}
+
+table.dataTable tr.dtrg-group.dtrg-level-0 td,
+table.dataTable tr.dtrg-group.dtrg-level-1 td {
+	background-color: #e0e0e0;
+	font-size: 0.9em;
+}
+
+table.dataTable tr.dtrg-group.dtrg-level-1 td {
+	background-color: #eeeded;
+    border-bottom: 1px solid #b9b9b9;
+    border-top: 1px solid #b9b9b9;
+}
+
+table.dataTable tr.dtrg-group.dtrg-end td {
+	background-color: #e8e7e7;
+	font-weight: 700;
+}

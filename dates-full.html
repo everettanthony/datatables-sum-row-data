@@ -1,0 +1,254 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>DataTables | Dates</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="assets/gen-styles.css"/>
+  <link rel="stylesheet" type="text/css" href="assets/jquery.dataTables.min.css"/>
+  <link rel="stylesheet" type="text/css" href="assets/select.dataTables.min.css"/>
+  <link rel="stylesheet" type="text/css" href="assets/buttons.dataTables.min.css"/>
+  <link rel="stylesheet" type="text/css" href="assets/rowGroup.dataTables.min.css"/>
+  <link rel="stylesheet" type="text/css" href="assets/fixedHeader.dataTables.min.css"/>
+  <style type="text/css">
+    table.dataTable tbody tr.row-totals,
+    table.dataTable tbody tr.row-totals:hover {
+        background: #fffee9;
+    }
+
+    table.dataTable tfoot tr {
+        background-color: #fffbdc;
+        font-weight: 700;
+    }
+
+    table.dataTable tfoot td {
+        padding: 8px 10px;
+    }
+
+    .view-all-months {
+        margin: 20px 0 40px 0;
+    }
+
+    .view-all-months .form-check-input {
+        position: absolute;
+        margin-top: .25rem;
+        margin-left: -1.25rem;
+    }
+  </style>
+</head>
+
+<body class="wide comments example">
+    <div class="container-fluid">
+        <div class="form-group form-check view-all-months">
+            <input type="checkbox" class="form-check-input" id="allMonths">
+            <label class="form-check-label" for="allMonths">View All Months</label>
+        </div>
+
+        <table id="example" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Customer/Workcenter</th>
+                    <th>Jan-18</th>
+                    <th>Feb-18</th>
+                    <th>Mar-18</th>
+                    <th>Apr-18</th>
+                    <th>May-18</th>
+                    <th>Jun-18</th>
+                    <th>Jul-18</th>
+                    <th>Aug-18</th>
+                    <th>Sep-18</th>
+                    <th>Oct-18</th>
+                    <th>Nov-18</th>
+                    <th>Dec-18</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Afro Steel Corporation</td>
+                    <td>4</td>
+                    <td>7</td>
+                    <td>0</td>
+                    <td>2</td>
+                    <td>6</td>
+                    <td>12</td>
+                    <td>1</td>
+                    <td>0</td>
+                    <td>6</td>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>9</td>
+                    <td></td>
+                </tr>  
+                <tr>
+                    <td>O'Neal Steel, Inc.</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>ABC Company</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>4</td>
+                    <td>5</td>
+                    <td>6</td>
+                    <td>7</td>
+                    <td>8</td>
+                    <td>9</td>
+                    <td>10</td>
+                    <td>11</td>
+                    <td>12</td>
+                    <td></td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>TOTAL</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+  <!-- JavaScript -->
+  <script type="text/javascript" src="assets/jquery-3.3.1.min.js"></script>
+  <script type="text/javascript" src="assets/datatables.1.10.19.js"></script>
+  <script type="text/javascript" src="assets/dataTables.select.min.js"></script>
+  <script type="text/javascript" src="assets/dataTables.buttons.min.js"></script>
+  <script type="text/javascript" src="assets/dataTables.fixedHeader.min.js"></script>
+  <script type="text/javascript" src="assets/dataTables.rowGroup.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(function() {
+        let table = $('#example').DataTable({
+            footerCallback: function ( row, data, start, end, display ) {
+                let api = this.api(), data;
+     
+                // Convert data to integer
+                let intVal = function ( i ) {
+                    return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
+                };
+     
+                // Total over all pages
+                total = api
+                    .column( 13 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+     
+                // Total over current page
+                pageTotal = api
+                    .column( 13, { page: 'current'} )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+     
+                // Add data to footer
+                $( api.column( 13 ).footer() ).html( total );
+            },
+            initComplete: function () {
+                let api = this.api();
+                let cols = [1,2,3,4,5,6,7,8,9,10,11,12];
+                hideColumns(api);
+                  
+                api.columns(cols, {
+                    page: 'current'
+                }).every(function() {
+                    let sum = this;
+                        .data()
+                        .reduce(function(a, b) {
+                            let x = parseFloat(a) || 0;
+                            let y = parseFloat(b) || 0;
+
+                            return x + y;
+                        }, 0);
+
+                    $(this.footer()).html(sum);
+                });
+            }
+        });
+
+        // Individual row totals displayed in last column
+        table.rows().eq(0).each( function ( index ) {
+            let row = table.row( index );       
+            let data = row.data();
+            data.shift();
+            let dataArr = data.map(Number);
+
+            let sum = dataArr.reduce(function (acc, val) {
+              return acc + val;
+            }, 0);
+
+            table.cell(row,13).data( sum ).draw();
+        } );
+
+        // Hide all columns by default and display previous three months data from today
+        function hideColumns(tbl) {
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            let today = new Date();
+            let last3Months = [];
+
+            tbl.columns().visible( false );
+            tbl.columns([0,13]).visible( true );
+
+            for (i = -1; i < 2; i++) {
+                last3Months.push((today.getMonth() - i));
+            }
+
+            tbl.columns( last3Months.join(',') ).visible( true );
+
+            // Init the column display toggle checkbox
+            initColumnToggle(tbl, last3Months.join(','));
+        }
+
+        // Column visibility toggle checkbox (12 months or previous 3 months)
+        function initColumnToggle(tbl, months) {
+            $('#allMonths').change(function() {
+                if(this.checked) {
+                    tbl.columns().visible( true );
+                }
+                else {
+                    tbl.columns().visible( false );
+                    tbl.columns([0,months,13]).visible( true );
+                }   
+            });
+        }
+    } );
+  </script>
+
+</body>
+</html>
