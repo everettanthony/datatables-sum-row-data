@@ -78,7 +78,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Afro Steel Corporation</td>
+                    <td class="col-txt">Afro Steel Corporation</td>
                     <td>4</td>
                     <td>7</td>
                     <td>0</td>
@@ -94,7 +94,7 @@
                     <td></td>
                 </tr>  
                 <tr>
-                    <td>O'Neal Steel, Inc.</td>
+                    <td class="col-txt">O'Neal Steel, Inc.</td>
                     <td>5</td>
                     <td>5</td>
                     <td>5</td>
@@ -110,7 +110,7 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>ABC Company</td>
+                    <td class="col-txt">ABC Company</td>
                     <td>1</td>
                     <td>2</td>
                     <td>3</td>
@@ -128,7 +128,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td>TOTAL</td>
+                    <td class="col-txt">TOTAL</td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -163,7 +163,7 @@
                     return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 :
                            typeof i === 'number' ? i : 0;
                 };
-     
+
                 // Total over all pages
                 const total = this
                     .api()
@@ -172,7 +172,7 @@
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
-     
+    
                 // Total over current page
                 const pageTotal = this
                     .api()
@@ -181,9 +181,9 @@
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
-     
-                // Append column data to the table footer
-                $( this.api().column( 13 ).footer() ).html( total );
+   
+               // Append column data to the table footer
+               $( this.api().column( 13 ).footer() ).html( total );
             },
             initComplete: function () {
                 const api = this.api();
@@ -210,22 +210,29 @@
 
         // Sum of each row to be displayed in the last column
         table.rows().eq(0).each( function ( index ) {
-            var row = table.row( index );       
-            var data = row.data();
-            data.shift();
-            var dataArr = data.map(Number);
+            let row = table.row( index );       
+            let data = row.data();
+            let dataArr = data.map(Number);
+            let newArr = 0;
 
-            var sum = dataArr.reduce(function (acc, val) {
-              return acc + val;
-            }, 0);
+            let sum = dataArr.reduce(function (acc, val) {
+                if(isNaN(acc)) {
+                    newArr = 0;
+                }
+                else {
+                    newArr = acc;
+                }
+                return newArr + val;
+            }, 0); 
 
+            console.log( dataArr );
             table.cell(row,13).data( sum ).draw();
         } );
 
         // Default display of previous 3 months
         function hideColumns(tbl) {
-            const months = ["January", "February", "March", "April", "May", "June", 
-                            "July", "August", "September", "October", "November", "December"];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                            'July', 'August', 'September', 'October', 'November', 'December'];
             const today = new Date();
             let last3Months = [];
 
