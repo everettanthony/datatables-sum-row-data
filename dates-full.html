@@ -30,6 +30,10 @@
         font-weight: 700;
     }
 
+    table.dataTable thead th {
+        padding-left: 10px;
+    }
+
     table.dataTable tfoot td {
         padding: 8px 10px;
     }
@@ -152,75 +156,78 @@
 
   <script type="text/javascript">
     $(document).ready(function() {
-        let table = $('#example').DataTable({
+        var table = $('#example').DataTable({
             footerCallback: function ( row, data, start, end, display ) {
-                let api = this.api(), data;
+                var api = this.api(), data;
      
-                // Convert data to integer
-                let intVal = function ( i ) {
-                    return typeof i === 'string' ? i.replace(/[\$,]/g, '')*1 : typeof i === 'number' ? i : 0;
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '')*1 :
+                        typeof i === 'number' ? i : 0;
                 };
      
                 // Total over all pages
-                total = api
+                var total = api
                     .column( 13 )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
      
-                // Total over current page
-                pageTotal = api
+                // Total over this page
+                var pageTotal = api
                     .column( 13, { page: 'current'} )
                     .data()
                     .reduce( function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0 );
      
-                // Add data to footer
+                // Update footer
                 $( api.column( 13 ).footer() ).html( total );
             },
+/*            drawCallback: function( settings ) {
+                
+            },*/
             initComplete: function () {
-                let api = this.api();
-                let cols = [1,2,3,4,5,6,7,8,9,10,11,12];
+                var api = this.api();
                 hideColumns(api);
-                  
+                let cols = [1,2,3,4,5,6,7,8,9,10,11,12];
+
                 api.columns(cols, {
                     page: 'current'
                 }).every(function() {
-                    let sum = this;
-                        .data()
-                        .reduce(function(a, b) {
-                            let x = parseFloat(a) || 0;
-                            let y = parseFloat(b) || 0;
-
-                            return x + y;
-                        }, 0);
+                    var sum = this
+                    .data()
+                    .reduce(function(a, b) {
+                        var x = parseFloat(a) || 0;
+                        var y = parseFloat(b) || 0;
+                        
+                        return x + y;
+                    }, 0);
 
                     $(this.footer()).html(sum);
                 });
             }
         });
 
-        // Individual row totals displayed in last column
         table.rows().eq(0).each( function ( index ) {
-            let row = table.row( index );       
-            let data = row.data();
+            var row = table.row( index );       
+            var data = row.data();
             data.shift();
-            let dataArr = data.map(Number);
+            var dataArr = data.map(Number);
 
-            let sum = dataArr.reduce(function (acc, val) {
+            var sum = dataArr.reduce(function (acc, val) {
               return acc + val;
             }, 0);
 
             table.cell(row,13).data( sum ).draw();
         } );
 
-        // Hide all columns by default and display previous three months data from today
         function hideColumns(tbl) {
             const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            let today = new Date();
-            let last3Months = [];
+            var today = new Date();
+            var last3Months = [];
 
             tbl.columns().visible( false );
             tbl.columns([0,13]).visible( true );
@@ -230,12 +237,9 @@
             }
 
             tbl.columns( last3Months.join(',') ).visible( true );
-
-            // Init the column display toggle checkbox
             initColumnToggle(tbl, last3Months.join(','));
         }
 
-        // Column visibility toggle checkbox (12 months or previous 3 months)
         function initColumnToggle(tbl, months) {
             $('#allMonths').change(function() {
                 if(this.checked) {
