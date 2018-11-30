@@ -189,6 +189,7 @@
                 const api = this.api();
                 const cols = [1,2,3,4,5,6,7,8,9,10,11,12];
                 hideColumns(api);
+                sumRows(api, 3);
 
                 // Sum of each column to be displayed in column's footer
                 api.columns(cols, {
@@ -208,26 +209,54 @@
             }
         });
 
-        // Sum of each row to be displayed in the last column
-        table.rows().eq(0).each( function ( index ) {
-            let row = table.row( index );       
-            let data = row.data();
-            let dataArr = data.map(Number);
-            let newArr = 0;
+        function sumRows(tbl, num) {
+            let sum = 0; 
+            let sumThree = 0;
+            let prevMonths = prev3Months();
 
-            let sum = dataArr.reduce(function (acc, val) {
-                if(isNaN(acc)) {
-                    newArr = 0;
-                }
-                else {
-                    newArr = acc;
-                }
-                return newArr + val;
-            }, 0); 
+            // Sum of each row to be displayed in the last column
+            tbl.rows().eq(0).each( function ( index ) {
+                let row = tbl.row( index );       
+                let data = row.data();
+                let dataArr = data.map(Number);
+                dataArr[13] = 0;
+                let shortArr = []
+                let newArr = 0;
 
-            console.log( dataArr );
-            table.cell(row,13).data( sum ).draw();
-        } );
+                prevMonths.forEach( m => {
+                    shortArr.push(dataArr[m])
+                })
+
+                if (num === 3) {
+                    dataArr = shortArr;
+                }
+
+                sum = dataArr.reduce(function (acc, val) {
+                    if(isNaN(acc)) {
+                        newArr = 0;
+                    }
+                    else {
+                        newArr = acc;
+                    }
+                    return newArr + val;
+                }, 0); 
+
+                tbl.cell(row,13).data( sum ).draw();
+            } );
+        }
+
+        function prev3Months() {
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+            const today = new Date();
+            let last3Months = [];
+
+            for (i = -1; i < 2; i++) {
+                last3Months.push((today.getMonth() - i));
+            }
+
+            return last3Months;
+        }
 
         // Default display of previous 3 months
         function hideColumns(tbl) {
@@ -252,14 +281,16 @@
         }
 
         // Checkbox to toggle column display (12 months or previous 3 months)
-        function initColumnToggle(tbl, months) {
+        function initColumnToggle(tbl, months) {        
             $('#allMonths').change(function() {
                 if(this.checked) {
                     tbl.columns().visible( true );
+                    sumRows(tbl, 12);
                 }
                 else {
                     tbl.columns().visible( false );
                     tbl.columns([0,months,13]).visible( true );
+                    sumRows(tbl, 3);
                 }   
             });
         }
